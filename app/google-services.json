@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "816905964530",
+    "firebase_url": "https://consultancy-manager.firebaseio.com",
+    "project_id": "consultancy-manager",
+    "storage_bucket": "consultancy-manager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816905964530:android:9047f5bd72419483",
+        "android_client_info": {
+          "package_name": "susankyatech.com.consultancymanageradmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816905964530-d2d8tc9u8fesotfda1i4a3s2rntgpiqm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArOX8UhkpsxoupECOJJynUIVIbFxuy4CA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

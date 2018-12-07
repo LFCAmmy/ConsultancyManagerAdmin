@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#247BA0</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="colorTransparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="time_indicator">#9e9e9e</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="white">#fff</color>
+
+    //login
+    <color name="login_background">#301864</color>
+    <color name="login_btn_color">#008577</color>
+    <color name="login_color">#00aaaa</color>
+
+    //message
+    <color name="messageBlue">#79ADDC</color>
+    <color name="messageGreen">#caffc1</color>
+
+
+</resources>
