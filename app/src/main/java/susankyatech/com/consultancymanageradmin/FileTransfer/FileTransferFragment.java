@@ -2,6 +2,7 @@ package susankyatech.com.consultancymanageradmin.FileTransfer;
 
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +15,11 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +27,31 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.valdesekamdem.library.mdtoast.MDToast;
+
 import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import mehdi.sakout.fancybuttons.FancyButton;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import susankyatech.com.consultancymanageradmin.API.StudentAPI;
+import susankyatech.com.consultancymanageradmin.Activity.MainActivity;
+import susankyatech.com.consultancymanageradmin.Application.App;
+import susankyatech.com.consultancymanageradmin.Generic.FileUtils;
+import susankyatech.com.consultancymanageradmin.Generic.Keys;
+import susankyatech.com.consultancymanageradmin.Model.Login;
 import susankyatech.com.consultancymanageradmin.R;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.content.ContentValues.TAG;
 import static susankyatech.com.consultancymanageradmin.Generic.FileURI.isDownloadsDocument;
 import static susankyatech.com.consultancymanageradmin.Generic.FileURI.isExternalStorageDocument;
 import static susankyatech.com.consultancymanageradmin.Generic.FileURI.isGooglePhotosUri;
@@ -43,10 +64,14 @@ public class FileTransferFragment extends Fragment {
 
     @BindView(R.id.uploadFile)
     ImageView uploadFile;
+    @BindView(R.id.file_name)
+    EditText fileName;
     @BindView(R.id.file_remark)
     EditText fileRemark;
     @BindView(R.id.send_button)
     FancyButton sendBtn;
+
+    private ProgressDialog progressDialog;
 
     private static final int RESULT_LOAD_FILES = 1;
     private static final int REQUEST_WRITE_PERMISSION = 786;
@@ -65,11 +90,13 @@ public class FileTransferFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_file_transfer, container, false);
         ButterKnife.bind(this, view);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("File Transfer");
         init();
         return view;
     }
 
     private void init() {
+        progressDialog = new ProgressDialog(getContext());
         uploadFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,21 +109,80 @@ public class FileTransferFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String remark = fileRemark.getText().toString().trim();
+                String name = fileName.getText().toString().trim();
 
-                if (selectedFilePath != null){
-                    Toast.makeText(getContext(), "uploaded", Toast.LENGTH_SHORT).show();
+                if (selectedFilePath == null) {
+                    Toast.makeText(getContext(), "please choose file first", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(name)) {
+                    fileName.setError("Enter File Name");
+                    fileName.requestFocus();
+                } else {
+                    progressDialog.setTitle("Uploading your Document");
+                    progressDialog.setMessage("Please wait, while we are uploading your document.");
+                    progressDialog.setCanceledOnTouchOutside(false);
+                    progressDialog.show();
+                    uploadDocument(remark, name);
                 }
 
             }
         });
     }
 
+    private void uploadDocument(String remark, String name) {
+        RequestBody fileBody =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("document", file.getName(), fileBody);
+
+        RequestBody group = RequestBody.create(MediaType.parse("text/plain"), "From Student");
+        RequestBody file_remark = RequestBody.create(MediaType.parse("text/plain"), remark);
+        final RequestBody file_name = RequestBody.create(MediaType.parse("text/plain"), name);
+
+        String studentId = String.valueOf(App.db().getInt(Keys.USER_ID));
+        RequestBody fileId = RequestBody.create(MediaType.parse("text/plain"), studentId);
+
+        StudentAPI studentAPI = App.consultancyRetrofit().create(StudentAPI.class);
+        studentAPI.addFiles(group, file_remark, file_name, fileToUpload, fileId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        selectedFilePath = null;
+                        fileName.setText("");
+                        fileRemark.setText("");
+                        MDToast mdToast = MDToast.makeText(getContext(), "File uploaded successfully", Toast.LENGTH_SHORT, MDToast.TYPE_SUCCESS);
+                        mdToast.show();
+                    }
+                } else {
+                    try {
+                        Log.d("client", "onResponse: error" + response.errorBody().string());
+                        MDToast mdToast = MDToast.makeText(getContext(), "There was something wrong while uploading your file. Please try again!", Toast.LENGTH_SHORT, MDToast.TYPE_WARNING);
+                        mdToast.show();
+                    } catch (Exception e) {
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d(TAG, "onFailure: " + t.getMessage());
+                MDToast mdToast = MDToast.makeText(getActivity(), "There is no internet connection. Please try again later!", Toast.LENGTH_SHORT, MDToast.TYPE_WARNING);
+                mdToast.show();
+            }
+        });
+
+
+    }
+
     private void selectFile() {
         try {
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, RESULT_LOAD_FILES);
+
+                return;
             } else {
-                openFilePicker();
+//                openFilePicker();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,121 +205,18 @@ public class FileTransferFragment extends Fragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_FILES && resultCode == RESULT_OK){
-            if (data.getData() != null){
+        if (requestCode == RESULT_LOAD_FILES && resultCode == RESULT_OK) {
+            if (data.getData() != null) {
                 Uri fileUri = data.getData();
-                selectedFilePath = getPath(data.getData());
-                file = new File(getPath(data.getData()));
-
+                selectedFilePath = FileUtils.getPath(getContext(), data.getData());
+                file = new File(selectedFilePath);
             }
         }
-    }
-
-    public String getPath(Uri uri) {
-        // DocumentProvider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(getActivity(), uri)) {
-            // ExternalStorageProvider
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
-            }
-            // DownloadsProvider
-            else if (isDownloadsDocument(uri)) {
-                final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
-                return getDataColumn(getActivity(), contentUri, null, null);
-            }
-            // MediaProvider
-            else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-                final String selection = "_id=?";
-                final String[] selectionArgs = new String[]{
-                        split[1]
-                };
-
-                return getDataColumn(getActivity(), contentUri, selection, selectionArgs);
-            }
-        }
-        // MediaStore (and general)
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
-
-            // Return the remote address
-            if (isGooglePhotosUri(uri))
-                return uri.getLastPathSegment();
-
-            return getDataColumn(getActivity(), uri, null, null);
-        }
-        // File
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-        return null;
-    }
-
-    public static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
-        Cursor cursor = null;
-        final String column = "_data";
-        final String[] projection = {
-                column
-        };
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    public String getFileName(Uri uri) {
-        String result = null;
-        if (uri.getScheme().equals("content")) {
-            Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(uri, null, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
-        }
-        return result;
     }
 
 }

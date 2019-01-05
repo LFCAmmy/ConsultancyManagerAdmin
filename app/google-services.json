@@ -8,6 +8,112 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:816905964530:android:972d906f4581e40e",
+        "android_client_info": {
+          "package_name": "com.susankya.cmst_app.achievers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816905964530-d2d8tc9u8fesotfda1i4a3s2rntgpiqm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArOX8UhkpsxoupECOJJynUIVIbFxuy4CA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816905964530:android:3d4366de30e0f9a5",
+        "android_client_info": {
+          "package_name": "com.susankya.cmst_app.rational"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816905964530-d2d8tc9u8fesotfda1i4a3s2rntgpiqm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArOX8UhkpsxoupECOJJynUIVIbFxuy4CA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816905964530:android:9a28e519637be047",
+        "android_client_info": {
+          "package_name": "com.susankya.consultancymanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816905964530-41a4b2b2h6b78q1osofp3ij3k2g4tu7r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.susankya.consultancymanager",
+            "certificate_hash": "8faf5036a14341e01ffcfc5f3b0373fc759f46f3"
+          }
+        },
+        {
+          "client_id": "816905964530-d2d8tc9u8fesotfda1i4a3s2rntgpiqm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArOX8UhkpsxoupECOJJynUIVIbFxuy4CA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816905964530-d2d8tc9u8fesotfda1i4a3s2rntgpiqm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:816905964530:android:9047f5bd72419483",
         "android_client_info": {
           "package_name": "susankyatech.com.consultancymanageradmin"

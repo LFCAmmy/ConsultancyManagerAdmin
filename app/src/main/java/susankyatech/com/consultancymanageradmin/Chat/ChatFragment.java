@@ -11,6 +11,7 @@ import android.text.LoginFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -50,6 +51,10 @@ import javax.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import susankyatech.com.consultancymanageradmin.Activity.MainActivity;
+import susankyatech.com.consultancymanageradmin.Application.App;
+import susankyatech.com.consultancymanageradmin.Generic.FragmentKeys;
+import susankyatech.com.consultancymanageradmin.Generic.Keys;
+import susankyatech.com.consultancymanageradmin.Model.Data;
 import susankyatech.com.consultancymanageradmin.R;
 
 import static android.content.ContentValues.TAG;
@@ -67,8 +72,10 @@ public class ChatFragment extends Fragment {
     ImageView sendMessage;
 
     private MessageAdapter adapter;
-    private List<Message> messagesList=new ArrayList<>();
-    private Map<String, Object> messageMap;
+    private List<Message> messagesList = new ArrayList<>();
+    private int clientId = App.db().getInt(Keys.CLIENT_ID), studentId = App.db().getInt(Keys.USER_ID);
+    private String clientName = "Demo";
+    private Data data;
 
     private FirebaseFirestore db;
     private CollectionReference dbMessage;
@@ -90,11 +97,8 @@ public class ChatFragment extends Fragment {
     }
 
     private void init() {
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        String strDate = sdf.format(c.getTime());
-        Log.d("test",strDate);
         db = FirebaseFirestore.getInstance();
+        data = App.db().getObject(FragmentKeys.DATA, Data.class);
         moveScroll();
         sendMessage.setOnClickListener(new View
                 .OnClickListener() {
@@ -102,15 +106,17 @@ public class ChatFragment extends Fragment {
             public void onClick(View view) {
                 final String messageText = inputMessage.getText().toString().trim();
 
-                if (!TextUtils.isEmpty(messageText)){
+                if (!TextUtils.isEmpty(messageText)) {
 
-                    Client client = new Client(2, "Susankya", "receiver");
-                    Student student = new Student(2, "Ram", "sender");
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("test","batman");
+                    db.collection("chats")
+                            .document(clientId + "-" + studentId)
+                            .set(map);
+
+                    Client client = new Client(clientId, clientName, "receiver");
+                    Student student = new Student(studentId, data.name, "sender");
                     Message message = new Message(client, messageText, student);
-
-                    Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat getTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    String time = getTime.format(calendar.getTime());
 
                     dbMessage.add(message)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -130,36 +136,37 @@ public class ChatFragment extends Fragment {
         });
     }
 
-    public void moveScroll()
-    {
-        if (Build.VERSION.SDK_INT >= 11) {
+    public void moveScroll() {
+        if (recyclerView.getAdapter() != null) {
             recyclerView
                     .addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v,
-                                           int left, int top, int right, int bottom,
-                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    if (bottom < oldBottom) {
-                        recyclerView.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                recyclerView.smoothScrollToPosition(
-                                        recyclerView.getAdapter().getItemCount() - 1);
+                        @Override
+                        public void onLayoutChange(View v,
+                                                   int left, int top, int right, int bottom,
+                                                   int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                            if (bottom < oldBottom) {
+                                recyclerView.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        recyclerView.smoothScrollToPosition(
+                                                recyclerView.getAdapter().getItemCount() - 1);
+                                    }
+                                }, 100);
                             }
-                        }, 100);
-                    }
-                }
-            });
+                        }
+                    });
         }
+
     }
+
     @Override
     public void onStart() {
         super.onStart();
 
         dbMessage = db.collection("chats")
-                .document("2-1")
+                .document(clientId + "-" + studentId)
                 .collection("messages");
-        dbMessage.orderBy("timestamp",Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        dbMessage.orderBy("timestamp", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -169,21 +176,23 @@ public class ChatFragment extends Fragment {
 
                 messagesList = new ArrayList<>();
 
-                for (QueryDocumentSnapshot document : value) {
+                if (value != null) {
+                    for (QueryDocumentSnapshot document : value) {
 
-                    Message m=new Message();
+                        Message m = new Message();
 
-                    m=document.toObject(Message.class);
-                    messagesList.add(m);
+                        m = document.toObject(Message.class);
+                        messagesList.add(m);
 
-                    adapter = new MessageAdapter(messagesList);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                    recyclerView.scrollToPosition(messagesList.size() - 1);
-                    recyclerView.setAdapter(adapter);
+                        adapter = new MessageAdapter(messagesList);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        recyclerView.scrollToPosition(messagesList.size() - 1);
+                        recyclerView.setAdapter(adapter);
 
-                    adapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();
 
 
+                    }
                 }
             }
         });

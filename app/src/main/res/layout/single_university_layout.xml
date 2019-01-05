@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="3dp"
+        android:layout_marginLeft="@dimen/small_margin"
+        android:layout_marginRight="@dimen/small_margin">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_margin">
+
+            <ImageView
+                android:id="@+id/university_logo"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:padding="@dimen/medium_padding"
+                android:background="@drawable/rounded_imageview"
+                android:src="@drawable/ic_correct"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/university_logo"
+                android:layout_marginLeft="@dimen/medium_padding"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/university_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_text"
+                    android:textSize="15dp"
+                    android:text="University Name"/>
+
+                <TextView
+                    android:id="@+id/university_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:text="University Address"/>
+
+                <TextView
+                    android:id="@+id/university_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="University Email"
+                    android:maxLines="2"
+                    />
+
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

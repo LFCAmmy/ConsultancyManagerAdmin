@@ -6,14 +6,8 @@ import java.util.List;
 
 public class Gallery {
     public int id;
+    public int client_id;
     public String image;
     public List<File> galleries;
     public ArrayList<String> images;
-
-    public Gallery() {
-    }
-
-    public Gallery(String image) {
-        this.image = image;
-    }
 }

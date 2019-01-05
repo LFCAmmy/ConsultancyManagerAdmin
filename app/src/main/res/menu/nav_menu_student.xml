@@ -22,9 +22,20 @@
             android:title="Notice" />
 
         <item
+            android:id="@+id/appointment"
+            android:icon="@drawable/ic_time_management"
+            android:title="Appointment"
+            />
+
+        <item
             android:id="@+id/file_transfer"
             android:icon="@drawable/ic_file_transfer"
             android:title="File Transfer" />
+
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
 
     </group>
 

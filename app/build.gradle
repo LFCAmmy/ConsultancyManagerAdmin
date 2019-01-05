@@ -17,6 +17,35 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "client"
+
+    productFlavors {
+
+        achievers {
+            dimension "client"
+            resValue "string", "app_name", "Achievers Educational Consultancy"
+            resValue "color", "colorPrimary", "#f05157"
+            resValue "color", "colorPrimaryDark", "#ea000a"
+            resValue "color", "ic_launcher_background", "#D72323"
+            versionCode 1
+            versionName "1.0"
+            applicationId "com.susankya.cmst_app.achievers"
+        }
+
+        rational {
+            dimension "client"
+            resValue "string", "app_name", "Rational Educational Consultancy"
+            resValue "color", "colorPrimary", "#6a7483"
+            resValue "color", "colorPrimaryDark", "#15253e"
+            resValue "color", "ic_launcher_background", "#ffffff"
+            versionCode 101
+            versionName "1.01"
+            applicationId "com.susankya.cmst_app.rational"
+        }
+    }
+
+
 }
 
 dependencies {
@@ -52,6 +81,22 @@ dependencies {
 
     //CircularImageView
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    //Material Dialogue
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+
+    //MAP
+    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+
+    // FAB
+    implementation 'com.github.clans:fab:1.6.4'
+
+    implementation 'com.android.support:multidex:1.0.3'
 
 }
 apply plugin: 'com.google.gms.google-services'

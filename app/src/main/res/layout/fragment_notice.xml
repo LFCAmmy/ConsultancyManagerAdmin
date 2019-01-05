@@ -12,22 +12,36 @@
 
         <TextView
             android:id="@+id/notice_title"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/medium_padding"
+            android:fontFamily="@font/roboto"
+            android:gravity="left|center_vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:text="Title"
             android:textColor="@color/primary_text"
-            android:text="Title" />
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ababab" />
+            android:layout_height="0.5dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/divider" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/medium_padding"
             android:textColor="@color/primary_text"
+            android:minHeight="50dp"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="16dp"
             android:orientation="horizontal">
 
             <TextView
@@ -44,21 +58,26 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/medium_padding"
+                android:layout_marginLeft="16sp"
+                android:layout_gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/notice_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
                     android:textColor="@color/primary_text"
+                    android:textSize="14sp"
                     android:text="Category Name"/>
 
                 <TextView
                     android:id="@+id/notice_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
                     android:textColor="@color/primary_text"
+                    android:textSize="12sp"
                     android:text="Notice Date"/>
 
             </LinearLayout>
@@ -67,16 +86,35 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ababab" />
+            android:layout_height="0.5dp"
+            android:background="@color/divider" />
 
-        <TextView
-            android:id="@+id/notice_description"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/medium_padding"
-            android:textColor="@color/primary_text"
-            android:text="Notice Description"/>
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/notice_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="3dp"
+                    android:fontFamily="@font/whitney_light"
+                    android:text="Notice Description"
+                    />
+
+            </RelativeLayout>
+
+        </ScrollView>
+
 
     </LinearLayout>
 

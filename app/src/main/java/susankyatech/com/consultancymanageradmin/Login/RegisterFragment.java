@@ -1,0 +1,231 @@
+package susankyatech.com.consultancymanageradmin.Login;
+
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.Patterns;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.valdesekamdem.library.mdtoast.MDToast;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import mehdi.sakout.fancybuttons.FancyButton;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import susankyatech.com.consultancymanageradmin.API.LoginAPI;
+import susankyatech.com.consultancymanageradmin.Activity.MainActivity;
+import susankyatech.com.consultancymanageradmin.Application.App;
+import susankyatech.com.consultancymanageradmin.Generic.FragmentKeys;
+import susankyatech.com.consultancymanageradmin.Generic.Keys;
+import susankyatech.com.consultancymanageradmin.Model.Login;
+import susankyatech.com.consultancymanageradmin.R;
+
+import static android.content.ContentValues.TAG;
+
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class RegisterFragment extends Fragment {
+
+    @BindView(R.id.fullName)
+    EditText fullName;
+    @BindView(R.id.email)
+    EditText email;
+    @BindView(R.id.password)
+    EditText password;
+    @BindView(R.id.phone)
+    EditText phone;
+    @BindView(R.id.rePassword)
+    EditText rePassword;
+    @BindView(R.id.txtLogin)
+    TextView txtLogin;
+    @BindView(R.id.btnSignUp)
+    FancyButton signUp;
+    @BindView(R.id.address)
+    EditText address;
+    @BindView(R.id.gender)
+    Spinner gender;
+    @BindView(R.id.year)
+    EditText year;
+    @BindView(R.id.month)
+    EditText month;
+    @BindView(R.id.day)
+    EditText day;
+
+
+
+    String[] sex = { "Male", "Female" };
+    private String userGender;
+    private int clientId = App.db().getInt(Keys.CLIENT_ID);
+
+    private int mYear, mMonth, mDay;
+
+    private ProgressDialog progressDialog;
+
+    public RegisterFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
+        ButterKnife.bind(this,view);
+        init();
+        return view;
+    }
+
+    private void init() {
+        progressDialog = new ProgressDialog(getContext());
+        ArrayAdapter aa = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item, sex);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        gender.setAdapter(aa);
+        gender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                userGender = sex[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userName = fullName.getText().toString().trim();
+                String userEmail = email.getText().toString().trim();
+                String userPhone = phone.getText().toString().trim();
+                String userPassword = password.getText().toString().trim();
+                String userRePassword = rePassword.getText().toString().trim();
+                String userAddress = address.getText().toString().trim();
+                String yrs = year.getText().toString().trim();
+                String mth = month.getText().toString().trim();
+                String mDay = day.getText().toString().trim();
+
+
+                if (TextUtils.isEmpty(userName)){
+                    fullName.setError("Enter your name");
+                    fullName.requestFocus();
+                } else if (TextUtils.isEmpty(userEmail)){
+                    email.setError("Enter your email");
+                    email.requestFocus();
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()){
+                    email.setError("Enter valid email");
+                    email.requestFocus();
+                } else if (TextUtils.isEmpty(userPhone)){
+                    phone.setError("Enter your phone");
+                    phone.requestFocus();
+                } else if (TextUtils.isEmpty(userAddress)){
+                    address.setError("Enter your address");
+                    address.requestFocus();
+                } else if (TextUtils.isEmpty(yrs)) {
+                    year.setError("Enter year");
+                    year.requestFocus();
+                } else if (TextUtils.isEmpty(mth)) {
+                    month.setError("Enter month");
+                    month.requestFocus();
+                } else if (TextUtils.isEmpty(mDay)) {
+                    day.setError("Enter day");
+                    day.requestFocus();
+                } else if (TextUtils.isEmpty(userPassword)){
+                    password.setError("Enter your password");
+                    password.requestFocus();
+                } else if (TextUtils.isEmpty(userRePassword)){
+                    rePassword.setError("Enter your confirm password");
+                    rePassword.requestFocus();
+                } else if (!userPassword.equals(userRePassword)){
+                    rePassword.setError("Enter password doesn't match");
+                    rePassword.requestFocus();
+                } else {
+                    String studentDOB = yrs + "-" + mth + "-" + mDay;
+                    progressDialog.setTitle("Signing up");
+                    progressDialog.setMessage("Please wait, while we are creating your account");
+                    progressDialog.setCanceledOnTouchOutside(false);
+                    progressDialog.show();
+                    registerStudent(userName, userEmail, userPhone, userPassword, userAddress, userGender, studentDOB);
+                }
+            }
+        });
+
+        txtLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.login_container, new StudentLoginFragment()).addToBackStack(null).commit();
+            }
+        });
+    }
+
+    private void registerStudent(String userName, String userEmail, String userPhone, String userPassword, String userAddress, String userGender, String userDOB) {
+        LoginAPI loginAPI = App.consultancyRetrofit().create(LoginAPI.class);
+        loginAPI.studentRegister(userName, userEmail, userPhone, userPassword, userAddress , userGender, userDOB, clientId).enqueue(new Callback<Login>() {
+            @Override
+            public void onResponse(Call<Login> call, Response<Login> response) {
+                if (response.body() != null) {
+                    App.db().putBoolean(Keys.USER_LOGIN_ATTEMPT, true);
+                    Log.d("asdasd", "onResponse: "+response);
+                    if (response.isSuccessful() && !response.body().data.jwt_token.isEmpty()) {
+                        App.db().putObject(Keys.USER_LOGIN, response.body());
+                        App.db().putInt(Keys.USER_ID, response.body().data.id);
+                        App.db().putString(Keys.USER_TOKEN, response.body().data.jwt_token);
+                        App.db().putBoolean(Keys.USER_LOGGED_IN, true);
+                        App.db().putObject(FragmentKeys.DATA, response.body().data);
+                        progressDialog.dismiss();
+                        goToMainActivity();
+
+                    } else {
+                        try {
+                            progressDialog.dismiss();
+                            MDToast mdToast = MDToast.makeText(getActivity(), "There was something wrong with your registration. Please try again!", Toast.LENGTH_SHORT, MDToast.TYPE_WARNING);
+                            mdToast.show();
+                        } catch (Exception e) {
+                        }
+                    }
+                } else {
+                    try {
+                        progressDialog.dismiss();
+                        Log.d("loginError", response.errorBody().string());
+                        MDToast mdToast = MDToast.makeText(getActivity(), "Applicant Already Exists. Please try again!"+response.errorBody().string(), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
+                        mdToast.show();
+                    } catch (Exception e) {
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Login> call, Throwable t) {
+                Log.d(TAG, "onFailure: "+t.getMessage());
+                MDToast mdToast = MDToast.makeText(getActivity(), "There is no internet connection. Please try again later!", Toast.LENGTH_SHORT, MDToast.TYPE_WARNING);
+                mdToast.show();
+            }
+        });
+    }
+
+    private void goToMainActivity() {
+        startActivity(new Intent(getActivity(), MainActivity.class));
+        getActivity().finish();
+    }
+
+}

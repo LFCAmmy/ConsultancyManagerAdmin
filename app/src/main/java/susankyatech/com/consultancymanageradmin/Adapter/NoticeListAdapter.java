@@ -11,12 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import susankyatech.com.consultancymanageradmin.Activity.MainActivity;
-import susankyatech.com.consultancymanageradmin.Notice.Notice;
+import susankyatech.com.consultancymanageradmin.Model.Notice;
 import susankyatech.com.consultancymanageradmin.Notice.NoticeFragment;
 import susankyatech.com.consultancymanageradmin.R;
 
@@ -41,20 +44,29 @@ public class NoticeListAdapter extends RecyclerView.Adapter<NoticeListAdapter.No
 
     @Override
     public void onBindViewHolder(@NonNull final NoticeListViewHolder holder, final int position) {
-       holder.categoryInitial.setText(noticeList.get(position).category.substring(0,1));
-        holder.category.setText(noticeList.get(position).category);
+       holder.categoryInitial.setText(noticeList.get(position).notice_category.substring(0,1));
+        holder.category.setText(noticeList.get(position).notice_category);
         holder.title.setText(noticeList.get(position).title);
-        holder.desc.setText(noticeList.get(position).notice);
-        holder.date.setText(noticeList.get(position).date);
+        holder.desc.setText(noticeList.get(position).description);
+
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = dateFormat.parse(noticeList.get(position).created_at);
+            String createdDate = dateFormat.format(date);
+            holder.date.setText(createdDate);
+        } catch (ParseException e){
+
+        }
 
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("title", noticeList.get(position).title);
-                bundle.putString("category", noticeList.get(position).category);
-                bundle.putString("notice", noticeList.get(position).notice);
-                bundle.putString("date", noticeList.get(position).date);
+                bundle.putString("category", noticeList.get(position).notice_category);
+                bundle.putString("notice", noticeList.get(position).description);
+                bundle.putString("date", noticeList.get(position).created_at);
 
                 FragmentTransaction fragmentTransaction = ((MainActivity) context).getSupportFragmentManager().beginTransaction();
                 NoticeFragment noticeFragment = new NoticeFragment();

@@ -1,10 +1,44 @@
 <resources>
-    <string name="app_name">ConsultancyManagerAdmin</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
+
+    //sign up
+    <string name="register">New User ! Sign Up</string>
+    <string name="admin_login">Consultancy Login</string>
+    <string name="login">Login</string>
+    <string name="admin">Admin</string>
+    <string name="student">Student</string>
+    <string name="email">Email Address</string>
+    <string name="password">Password</string>
+    <string name="phone">Phone</string>
+    <string name="gender">Gender</string>
+    <string name="address">Address</string>
+    <string name="p_email">Email</string>
+    <string name="full_name">Full Name</string>
+    <string name="Username">Username</string>
+    <string name="repeat_password">Confirm Password</string>
+    <string name="signUp">Sign Up</string>
+    <string name="here">&#160;here</string>
+    <string name="already_have_an_account">Already have an account?&#160;</string>
+    <string name="dont_have_an_account">Don\'t have an account? Please&#160;</string>
+    <string name="are_you_a_consultancy">Are you a consultancy? Please&#160;</string>
+
+    //TEST
+    <string name="ielts">IELTS</string>
+    <string name="sat">SAT</string>
+    <string name="tofel">TOEFL</string>
+    <string name="pte">PTE</string>
+    <string name="gre">GRE</string>
+    <string name="title_activity_maps">Map</string>
+
+    //Message
+    <string name="user_verification_message">Before uploading your document, please verify your account</string>
 
     <string name="file_transfer">Files you add here will be sent to your consultancy</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="rational_about_1">Rational Education Consultancy Pvt. Ltd established with a commitment to provide fair and transparent service to the students for their better future. It is lead and managed by experienced educational consultants. We have gathered considerable experience and expertise. We are registered Educational Consultant and we consult student for the best option. </string>
+    <string name="acheivers_about">We offer a range of training packages in a range of subject areas and can offer blended learning opportunities to best meet your needs. If sitting in a room with a trainer and having the opportunity for discussion with other learners sounds good to you then we can offer this. If you have enough people wanting to attend the same course.</string>
 </resources>

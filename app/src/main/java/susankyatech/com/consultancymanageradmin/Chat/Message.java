@@ -8,7 +8,6 @@ public class Message {
     public Client client;
     public String message;
     public Student student;
-
     @ServerTimestamp
     public Date timestamp;
     public Message(Client client, String message, Student student) {

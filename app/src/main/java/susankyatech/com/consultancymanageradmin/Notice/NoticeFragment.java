@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import susankyatech.com.consultancymanageradmin.R;
@@ -56,7 +60,13 @@ public class NoticeFragment extends Fragment {
         noticeTitle.setText(title);
         noticeCategory.setText(category);
         noticeDesc.setText(notice);
-        noticeDate.setText(date);
+
+        try{
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date d = simpleDateFormat.parse(date);
+            String createdDate = simpleDateFormat.format(d);
+            noticeDate.setText(createdDate);
+        } catch (ParseException e){}
         categoryInitial.setText(category.substring(0,1));
     }
 
